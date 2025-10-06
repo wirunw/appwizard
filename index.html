@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ตัวช่วยสร้าง Web App อัตโนมัติ</title>
+    <title>AppWizard - สร้างเว็บแอปใน 4 ขั้นตอน</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@700&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
+        }
+        h1, h2, h3 {
+            font-family: 'Kanit', sans-serif;
         }
         .step-card {
             transition: all 0.3s ease-in-out;
@@ -64,10 +70,45 @@
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-4xl mx-auto">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-slate-800">Web App Generator Wizard</h1>
-            <p class="text-slate-600 mt-2">สร้าง Web App ของคุณเองง่ายๆ เพียงไม่กี่ขั้นตอน</p>
+        <header class="text-center mb-12">
+            <img src="https://i.postimg.cc/dDfBQVWf/wirun-facbook.png" alt="AppWizard Logo" class="h-24 w-24 mx-auto mb-4 rounded-full border-4 border-white shadow-lg">
+            <h1 class="text-6xl font-bold text-slate-800">AppWizard</h1>
+            <p class="text-slate-600 mt-2 text-lg">สร้าง Web App ของคุณเองง่ายๆ เพียงไม่กี่ขั้นตอน</p>
         </header>
+
+        <!-- Infographic Section -->
+        <div class="mb-12 px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center justify-center h-16 w-16 bg-emerald-500 text-white rounded-full shadow-md text-2xl mb-3">
+                        <i class="fa-solid fa-table-cells-large"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-700">1. เลือกประเภทแอป</h3>
+                    <p class="text-sm text-slate-500">เลือกเทมเพลตที่ต้องการ</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center justify-center h-16 w-16 bg-emerald-500 text-white rounded-full shadow-md text-2xl mb-3">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-700">2. ตั้งค่ารายละเอียด</h3>
+                    <p class="text-sm text-slate-500">กรอกข้อมูลเฉพาะของคุณ</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center justify-center h-16 w-16 bg-emerald-500 text-white rounded-full shadow-md text-2xl mb-3">
+                        <i class="fa-solid fa-server"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-700">3. สร้าง Backend</h3>
+                    <p class="text-sm text-slate-500">ติดตั้งโค้ดฝั่ง Server</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center justify-center h-16 w-16 bg-emerald-500 text-white rounded-full shadow-md text-2xl mb-3">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-700">4. รับโค้ด Frontend</h3>
+                    <p class="text-sm text-slate-500">นำเว็บแอปไปใช้งาน</p>
+                </div>
+            </div>
+        </div>
 
         <main class="space-y-6">
             <!-- Step 1: App Selection -->
@@ -80,7 +121,8 @@
                     <option value="eventRegistration">ระบบลงทะเบียนเข้าร่วมงาน</option>
                     <option value="workoutLogger">แอปบันทึกการออกกำลังกาย</option>
                     <option value="expenseTracker">ระบบบันทึกรายรับ-รายจ่าย</option>
-                    <option value="pharmacyPos">ระบบ POS ร้านยา / ร้านสะดวกซื้อ</option>
+                    <option value="pharmacyPos">ระบบ POS ร้านยา</option>
+                    <option value="storePos">ระบบ POS ร้านสะดวกซื้อ</option>
                     <option value="custom">อื่นๆ (สร้างด้วยตนเอง)</option>
                 </select>
             </div>
@@ -242,21 +284,37 @@
             ]
         },
         pharmacyPos: {
-            name: 'ระบบ POS ร้านยา / ร้านสะดวกซื้อ',
+            name: 'ระบบ POS ร้านยา',
             fields: [
-                { id: 'appName', label: 'ชื่อร้านค้า', type: 'text', value: 'ระบบ POS ร้านยา' },
+                { id: 'appName', label: 'ชื่อร้านยา', type: 'text', value: 'ระบบ POS ร้านยา' },
                 { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet สำหรับเก็บข้อมูลการขาย' },
                 { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
                 { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
             ],
             dataFields: ['patientName', 'hn', 'phone', 'drugList', 'totalAmount', 'pharmacist'],
             frontendFields: [
-                { id: 'patientName', label: 'ชื่อคนไข้/ลูกค้า', type: 'text', required: true },
-                { id: 'hn', label: 'HN / รหัสลูกค้า (ถ้ามี)', type: 'text', required: false },
+                { id: 'patientName', label: 'ชื่อคนไข้', type: 'text', required: true },
+                { id: 'hn', label: 'HN (ถ้ามี)', type: 'text', required: false },
                 { id: 'phone', label: 'เบอร์โทรศัพท์', type: 'tel', required: false },
-                { id: 'drugList', label: 'รายการยา/สินค้า (ระบุชื่อและจำนวน)', type: 'textarea', required: true },
+                { id: 'drugList', label: 'รายการยา (ระบุชื่อและจำนวน)', type: 'textarea', required: true },
                 { id: 'totalAmount', label: 'ยอดรวม (บาท)', type: 'number', required: true },
-                { id: 'pharmacist', label: 'ชื่อผู้ขาย/เภสัชกร', type: 'text', required: true }
+                { id: 'pharmacist', label: 'ชื่อเภสัชกรผู้ขาย', type: 'text', required: true }
+            ]
+        },
+        storePos: {
+            name: 'ระบบ POS ร้านสะดวกซื้อ',
+            fields: [
+                { id: 'appName', label: 'ชื่อร้านค้า', type: 'text', value: 'ร้านสะดวกซื้อของฉัน' },
+                { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet สำหรับเก็บข้อมูลการขาย' },
+                { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Blue' },
+                { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ],
+            dataFields: ['items', 'totalAmount', 'paymentMethod', 'cashier'],
+            frontendFields: [
+                { id: 'items', label: 'รายการสินค้า (ระบุชื่อ, จำนวน)', type: 'textarea', required: true },
+                { id: 'totalAmount', label: 'ยอดรวม (บาท)', type: 'number', required: true },
+                { id: 'paymentMethod', label: 'วิธีการชำระเงิน', type: 'select', options: ['เงินสด', 'สแกนจ่าย (QR)', 'บัตรเครดิต'], required: true },
+                { id: 'cashier', label: 'ชื่อพนักงาน', type: 'text', required: true }
             ]
         },
         custom: {
