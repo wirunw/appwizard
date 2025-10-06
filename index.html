@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตัวช่วยสร้าง Web App อัตโนมัติ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        .step-card {
+            transition: all 0.3s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .step-card.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            height: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        .code-block {
+            position: relative;
+            background-color: #1E293B; /* slate-800 */
+            color: #E2E8F0; /* slate-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #334155; /* slate-700 */
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        .copy-btn:hover {
+            background-color: #475569; /* slate-600 */
+        }
+        .custom-field {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr) auto auto;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        @media (min-width: 640px) {
+            .custom-field {
+                 grid-template-columns: 1fr 1fr 1fr auto auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-slate-800">Web App Generator Wizard</h1>
+            <p class="text-slate-600 mt-2">สร้าง Web App ของคุณเองง่ายๆ เพียงไม่กี่ขั้นตอน</p>
+        </header>
+
+        <main class="space-y-6">
+            <!-- Step 1: App Selection -->
+            <div id="step1" class="step-card bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold text-emerald-600 mb-1">ขั้นตอนที่ 1: เลือกประเภทแอปพลิเคชัน</h2>
+                <p class="text-slate-500 mb-6">เลือกโปรเจกต์ที่คุณต้องการสร้างจากรายการด้านล่างนี้</p>
+                <select id="appTypeSelector" class="w-full p-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    <option value="">-- กรุณาเลือก --</option>
+                    <option value="contactForm">เว็บ "ติดต่อเรา" (Contact Form)</option>
+                    <option value="eventRegistration">ระบบลงทะเบียนเข้าร่วมงาน</option>
+                    <option value="workoutLogger">แอปบันทึกการออกกำลังกาย</option>
+                    <option value="expenseTracker">ระบบบันทึกรายรับ-รายจ่าย</option>
+                    <option value="pharmacyPos">ระบบ POS ร้านยา / ร้านสะดวกซื้อ</option>
+                    <option value="custom">อื่นๆ (สร้างด้วยตนเอง)</option>
+                </select>
+            </div>
+
+            <!-- Step 2: Configuration -->
+            <div id="step2" class="step-card bg-white p-8 rounded-xl shadow-lg hidden">
+                <h2 class="text-2xl font-bold text-emerald-600 mb-1">ขั้นตอนที่ 2: ตั้งค่ารายละเอียด</h2>
+                <p class="text-slate-500 mb-6">กรอกข้อมูลพื้นฐานสำหรับแอปพลิเคชันของคุณ</p>
+                <div id="configContainer" class="space-y-4">
+                    <!-- Dynamic fields will be inserted here -->
+                </div>
+                <div id="customFieldsBuilder" class="hidden mt-6">
+                     <h3 class="font-bold text-slate-800 mb-2">ออกแบบฟอร์มของคุณ:</h3>
+                     <div id="customFieldsContainer" class="space-y-3"></div>
+                     <button id="addCustomFieldButton" type="button" class="mt-4 text-emerald-600 font-semibold hover:text-emerald-700">+ เพิ่มฟิลด์ใหม่</button>
+                </div>
+                <button id="toStep3Button" class="w-full mt-6 bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors">
+                    ถัดไป: สร้าง Backend
+                </button>
+            </div>
+
+            <!-- Step 3: Backend Generation -->
+            <div id="step3" class="step-card bg-white p-8 rounded-xl shadow-lg hidden">
+                <h2 class="text-2xl font-bold text-emerald-600 mb-1">ขั้นตอนที่ 3: สร้าง Backend (Google Apps Script)</h2>
+                <p class="text-slate-500 mb-4">ทำตามขั้นตอนต่อไปนี้เพื่อติดตั้งโค้ดฝั่ง Server:</p>
+                <ol class="list-decimal list-inside space-y-2 text-slate-700 mb-6 bg-slate-50 p-4 rounded-lg">
+                    <li>ไปที่ <a href="https://script.google.com/home/my" target="_blank" class="text-emerald-600 hover:underline">script.google.com</a> และสร้างโปรเจกต์ใหม่</li>
+                    <li>ลบโค้ดเก่าทิ้งทั้งหมด และ **คัดลอกโค้ดด้านล่าง** ไปวางแทน</li>
+                    <li>กด **Deploy > New deployment** เลือกประเภทเป็น **Web app**</li>
+                    <li>ตั้งค่า **Who has access** เป็น **Anyone** แล้วกด Deploy</li>
+                    <li>**สำคัญมาก:** คัดลอก **Web app URL** ที่ได้ มาวางในช่องด้านล่างนี้</li>
+                </ol>
+                
+                <h3 class="font-bold text-slate-800 mb-2">โค้ด Google Apps Script:</h3>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode('backendCodeDisplay')">คัดลอก</button>
+                    <pre><code id="backendCodeDisplay"></code></pre>
+                </div>
+
+                <div class="mt-6">
+                    <label for="appsScriptUrlInput" class="block font-medium text-slate-700 mb-2">วาง Web app URL ที่ได้จาก Google:</label>
+                    <input type="url" id="appsScriptUrlInput" placeholder="https://script.google.com/macros/s/..." class="w-full p-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+
+                <button id="toStep4Button" class="w-full mt-6 bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors">
+                    ถัดไป: สร้าง Frontend
+                </button>
+            </div>
+
+            <!-- Step 4: Frontend Generation -->
+            <div id="step4" class="step-card bg-white p-8 rounded-xl shadow-lg hidden">
+                <h2 class="text-2xl font-bold text-emerald-600 mb-1">ขั้นตอนที่ 4: สร้าง Frontend (Web App)</h2>
+                <p class="text-slate-500 mb-4">ยินดีด้วย! นี่คือโค้ดสำหรับหน้าเว็บของคุณ คุณสามารถนำไปใช้กับ Canva AI หรือบันทึกเป็นไฟล์ .html เพื่อเปิดในเบราว์เซอร์ได้เลย</p>
+                
+                <h3 class="font-bold text-slate-800 mb-2">โค้ด HTML (ทั้งหมดในไฟล์เดียว):</h3>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode('frontendCodeDisplay')">คัดลอก</button>
+                    <pre><code id="frontendCodeDisplay"></code></pre>
+                </div>
+                
+                <button id="startOverButton" class="w-full mt-8 bg-slate-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-slate-800 transition-colors">
+                    สร้างแอปใหม่อีกครั้ง
+                </button>
+            </div>
+        </main>
+
+        <footer class="text-center mt-10 text-slate-500 text-sm">
+            <div class="flex items-center justify-center space-x-4">
+                 <img src="https://i.postimg.cc/dDfBQVWf/wirun-facbook.png" alt="Logo" class="h-12 w-12 rounded-full border-2 border-white shadow-md">
+                 <p>
+                    ออกแบบโดยเภสัชกรวิรุณ เวชศิริ<br>
+                    <a href="http://www.pharmconnection.net" target="_blank" class="text-emerald-600 hover:underline">www.pharmconnection.net</a>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+<script>
+    // --- DOM Elements ---
+    const appTypeSelector = document.getElementById('appTypeSelector');
+    const steps = {
+        step1: document.getElementById('step1'),
+        step2: document.getElementById('step2'),
+        step3: document.getElementById('step3'),
+        step4: document.getElementById('step4')
+    };
+    const configContainer = document.getElementById('configContainer');
+    const customFieldsBuilder = document.getElementById('customFieldsBuilder');
+    const customFieldsContainer = document.getElementById('customFieldsContainer');
+    const addCustomFieldButton = document.getElementById('addCustomFieldButton');
+    const toStep3Button = document.getElementById('toStep3Button');
+    const toStep4Button = document.getElementById('toStep4Button');
+    const startOverButton = document.getElementById('startOverButton');
+    const backendCodeDisplay = document.getElementById('backendCodeDisplay');
+    const frontendCodeDisplay = document.getElementById('frontendCodeDisplay');
+    const appsScriptUrlInput = document.getElementById('appsScriptUrlInput');
+
+    // --- App Definitions ---
+    const appTemplates = {
+        contactForm: {
+            name: 'เว็บ "ติดต่อเรา"',
+            fields: [
+                { id: 'appName', label: 'ชื่อแอปพลิเคชัน/เว็บไซต์', type: 'text', value: 'Contact Us' },
+                { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet ที่จะใช้เก็บข้อมูล' },
+                { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
+                { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ],
+            dataFields: ['name', 'email', 'message'],
+            frontendFields: [
+                { id: 'name', label: 'ชื่อ-นามสกุล', type: 'text', required: true },
+                { id: 'email', label: 'อีเมล', type: 'email', required: true },
+                { id: 'message', label: 'ข้อความ', type: 'textarea', required: true }
+            ]
+        },
+        eventRegistration: {
+            name: 'ระบบลงทะเบียนเข้าร่วมงาน',
+            fields: [
+                { id: 'appName', label: 'ชื่องานอีเวนต์', type: 'text', value: 'Event Registration' },
+                { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet สำหรับเก็บรายชื่อ' },
+                { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
+                { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ],
+            dataFields: ['fullName', 'email', 'phone'],
+            frontendFields: [
+                { id: 'fullName', label: 'ชื่อ-นามสกุล ผู้ลงทะเบียน', type: 'text', required: true },
+                { id: 'email', label: 'อีเมล', type: 'email', required: true },
+                { id: 'phone', label: 'เบอร์โทรศัพท์', type: 'tel', required: false }
+            ]
+        },
+        workoutLogger: {
+            name: 'แอปบันทึกการออกกำลังกาย',
+            fields: [
+                { id: 'appName', label: 'ชื่อแอป', type: 'text', value: 'My Workout Log' },
+                { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet สำหรับเก็บสถิติ' },
+                { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
+                { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ],
+            dataFields: ['exercise', 'sets', 'reps', 'weight'],
+            frontendFields: [
+                { id: 'exercise', label: 'ท่าที่เล่น', type: 'text', required: true },
+                { id: 'sets', label: 'จำนวนเซ็ต', type: 'number', required: true },
+                { id: 'reps', label: 'จำนวนครั้ง/เซ็ต', type: 'number', required: true },
+                { id: 'weight', label: 'น้ำหนัก (กก.)', type: 'number', required: false }
+            ]
+        },
+        expenseTracker: {
+            name: 'ระบบบันทึกรายรับ-รายจ่าย',
+            fields: [
+                { id: 'appName', label: 'ชื่อแอป', type: 'text', value: 'Expense Tracker' },
+                { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet สำหรับเก็บบัญชี' },
+                { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
+                { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ],
+            dataFields: ['item', 'amount', 'type'],
+            frontendFields: [
+                { id: 'item', label: 'รายการ', type: 'text', required: true },
+                { id: 'amount', label: 'จำนวนเงิน', type: 'number', required: true },
+                { id: 'type', label: 'ประเภท', type: 'select', options: ['รายรับ', 'รายจ่าย'], required: true }
+            ]
+        },
+        pharmacyPos: {
+            name: 'ระบบ POS ร้านยา / ร้านสะดวกซื้อ',
+            fields: [
+                { id: 'appName', label: 'ชื่อร้านค้า', type: 'text', value: 'ระบบ POS ร้านยา' },
+                { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet สำหรับเก็บข้อมูลการขาย' },
+                { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
+                { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ],
+            dataFields: ['patientName', 'hn', 'phone', 'drugList', 'totalAmount', 'pharmacist'],
+            frontendFields: [
+                { id: 'patientName', label: 'ชื่อคนไข้/ลูกค้า', type: 'text', required: true },
+                { id: 'hn', label: 'HN / รหัสลูกค้า (ถ้ามี)', type: 'text', required: false },
+                { id: 'phone', label: 'เบอร์โทรศัพท์', type: 'tel', required: false },
+                { id: 'drugList', label: 'รายการยา/สินค้า (ระบุชื่อและจำนวน)', type: 'textarea', required: true },
+                { id: 'totalAmount', label: 'ยอดรวม (บาท)', type: 'number', required: true },
+                { id: 'pharmacist', label: 'ชื่อผู้ขาย/เภสัชกร', type: 'text', required: true }
+            ]
+        },
+        custom: {
+            name: 'แอปพลิเคชันที่สร้างเอง',
+            fields: [
+                 { id: 'appName', label: 'ชื่อแอปพลิเคชัน', type: 'text', value: 'My Custom App' },
+                 { id: 'sheetId', label: 'Google Sheet ID', type: 'text', placeholder: 'ไอดีของ Google Sheet ที่จะใช้เก็บข้อมูล' },
+                 { id: 'themeColor', label: 'เลือก Theme สี', type: 'select', options: ['Emerald', 'Blue', 'Indigo', 'Red', 'Slate'], value: 'Emerald' },
+                 { id: 'logoUrl', label: 'URL โลโก้ (ถ้ามี)', type: 'url', placeholder: 'https://.../logo.png' }
+            ]
+        }
+    };
+    
+    let currentConfig = {};
+    let currentAppType = '';
+
+    // --- Event Listeners ---
+    appTypeSelector.addEventListener('change', (e) => {
+        const selectedType = e.target.value;
+        currentAppType = selectedType;
+        
+        if (!selectedType) {
+            steps.step2.classList.add('hidden');
+            return;
+        }
+
+        generateConfigForm(selectedType);
+        
+        if (selectedType === 'custom') {
+            customFieldsBuilder.classList.remove('hidden');
+            customFieldsContainer.innerHTML = '';
+            addCustomFieldInput(); // Add the first field by default
+        } else {
+            customFieldsBuilder.classList.add('hidden');
+        }
+
+        steps.step2.classList.remove('hidden');
+        steps.step3.classList.add('hidden');
+        steps.step4.classList.add('hidden');
+    });
+
+    addCustomFieldButton.addEventListener('click', addCustomFieldInput);
+
+    toStep3Button.addEventListener('click', () => {
+        if (!captureConfig()) return;
+        
+        const template = (currentAppType === 'custom') ? currentConfig.customTemplate : appTemplates[currentAppType];
+        
+        const backendCode = generateBackendCode(template, currentConfig);
+        backendCodeDisplay.textContent = backendCode;
+        steps.step3.classList.remove('hidden');
+    });
+
+    toStep4Button.addEventListener('click', () => {
+        const appsScriptUrl = appsScriptUrlInput.value.trim();
+        if (!appsScriptUrl) {
+            alert('กรุณาวาง Web app URL ที่ได้จาก Google Apps Script ก่อนครับ');
+            return;
+        }
+        currentConfig.appsScriptUrl = appsScriptUrl;
+        
+        const template = (currentAppType === 'custom') ? currentConfig.customTemplate : appTemplates[currentAppType];
+        
+        const frontendCode = generateFrontendCode(template, currentConfig);
+        frontendCodeDisplay.textContent = frontendCode;
+        steps.step4.classList.remove('hidden');
+    });
+
+    startOverButton.addEventListener('click', () => {
+        currentConfig = {};
+        currentAppType = '';
+        appTypeSelector.value = '';
+        
+        Object.values(steps).forEach((step, index) => {
+            if (index > 0) step.classList.add('hidden');
+        });
+        
+        configContainer.innerHTML = '';
+        appsScriptUrlInput.value = '';
+    });
+
+    // --- Core Functions ---
+    function generateConfigForm(appType) {
+        const template = appTemplates[appType];
+        configContainer.innerHTML = '';
+        template.fields.forEach(field => {
+            configContainer.appendChild(createInputElement(field));
+        });
+    }
+
+    function createInputElement(fieldConfig) {
+        const wrapper = document.createElement('div');
+        const label = document.createElement('label');
+        label.htmlFor = fieldConfig.id;
+        label.className = 'block font-medium text-slate-700 mb-2';
+        label.textContent = fieldConfig.label;
+        wrapper.appendChild(label);
+
+        if (fieldConfig.type === 'select') {
+            const select = document.createElement('select');
+            select.id = fieldConfig.id;
+            select.name = fieldConfig.id;
+            select.className = 'w-full p-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white';
+            fieldConfig.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                if (opt === fieldConfig.value) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            wrapper.appendChild(select);
+        } else {
+            const input = document.createElement('input');
+            input.type = fieldConfig.type;
+            input.id = fieldConfig.id;
+            input.name = fieldConfig.id;
+            input.placeholder = fieldConfig.placeholder || '';
+            input.value = fieldConfig.value || '';
+            input.className = 'w-full p-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500';
+            wrapper.appendChild(input);
+        }
+        return wrapper;
+    }
+
+    function addCustomFieldInput() {
+        const fieldId = `customField_${Date.now()}`;
+        const div = document.createElement('div');
+        div.className = 'custom-field p-2 border rounded-md bg-slate-50';
+        div.innerHTML = `
+            <input type="text" data-type="label" placeholder="ป้ายกำกับ (เช่น ชื่อ-สกุล)" class="p-2 border-2 rounded-md text-sm">
+            <input type="text" data-type="id" placeholder="ID (อังกฤษ, ห้ามเว้นวรรค)" class="p-2 border-2 rounded-md text-sm">
+            <select data-type="type" class="p-2 border-2 rounded-md text-sm bg-white">
+                <option value="text">Text</option>
+                <option value="email">Email</option>
+                <option value="number">Number</option>
+                <option value="tel">Phone</option>
+                <option value="textarea">Textarea</option>
+            </select>
+            <label class="flex items-center justify-center text-sm"><input type="checkbox" data-type="required" class="mr-1 h-4 w-4">บังคับ</label>
+            <button type="button" class="text-red-500 hover:text-red-700 font-bold text-lg" onclick="this.parentElement.remove()">×</button>
+        `;
+        customFieldsContainer.appendChild(div);
+    }
+    
+    function captureConfig() {
+        currentConfig = {};
+        const baseFields = appTemplates[currentAppType].fields;
+        let allFilled = true;
+
+        baseFields.forEach(field => {
+            const inputElement = document.getElementById(field.id);
+            if (!inputElement.value.trim() && field.id !== 'logoUrl') allFilled = false;
+            currentConfig[field.id] = inputElement.value.trim();
+        });
+
+        if (currentAppType === 'custom') {
+            const customTemplate = { dataFields: [], frontendFields: [] };
+            const fieldElements = customFieldsContainer.querySelectorAll('.custom-field');
+            if(fieldElements.length === 0) {
+                 alert('กรุณาเพิ่มฟิลด์อย่างน้อย 1 ฟิลด์ครับ');
+                 return false;
+            }
+            fieldElements.forEach(fieldEl => {
+                const label = fieldEl.querySelector('[data-type="label"]').value.trim();
+                const id = fieldEl.querySelector('[data-type="id"]').value.trim().replace(/\s+/g, '_');
+                const type = fieldEl.querySelector('[data-type="type"]').value;
+                const required = fieldEl.querySelector('[data-type="required"]').checked;
+
+                if (!label || !id) {
+                    allFilled = false;
+                }
+                
+                customTemplate.dataFields.push(id);
+                customTemplate.frontendFields.push({ id, label, type, required });
+            });
+            currentConfig.customTemplate = customTemplate;
+        }
+
+        if (!allFilled) {
+            alert('กรุณากรอกข้อมูลในช่องตั้งค่าและฟิลด์ที่สร้างเองให้ครบถ้วนครับ');
+            return false;
+        }
+        return true;
+    }
+
+    function generateBackendCode(template, config) {
+        const headers = ['Timestamp', ...template.dataFields].map(h => `"${h}"`).join(', ');
+        const dataValues = template.dataFields.map(field => `data.${field}`).join(', ');
+
+        return `
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.openById("${config.sheetId}").getSheets()[0];
+    
+    if (sheet.getLastRow() < 1) {
+      sheet.appendRow([${headers}]);
+    }
+    
+    const data = JSON.parse(e.postData.contents);
+    
+    const newRow = [new Date(), ${dataValues}];
+    sheet.appendRow(newRow);
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({ "status": "success", "message": "บันทึกข้อมูลเรียบร้อย" }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ "status": "error", "message": err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+        `.trim();
+    }
+
+    function generateFrontendCode(template, config) {
+        const themes = {
+            Emerald: { bg: 'bg-emerald-600', hover: 'hover:bg-emerald-700', ring: 'focus:ring-emerald-500', border: 'focus:border-emerald-500' },
+            Blue: { bg: 'bg-blue-600', hover: 'hover:bg-blue-700', ring: 'focus:ring-blue-500', border: 'focus:border-blue-500' },
+            Indigo: { bg: 'bg-indigo-600', hover: 'hover:bg-indigo-700', ring: 'focus:ring-indigo-500', border: 'focus:border-indigo-500' },
+            Red: { bg: 'bg-red-600', hover: 'hover:bg-red-700', ring: 'focus:ring-red-500', border: 'focus:border-red-500' },
+            Slate: { bg: 'bg-slate-600', hover: 'hover:bg-slate-700', ring: 'focus:ring-slate-500', border: 'focus:border-slate-500' }
+        };
+        const selectedTheme = themes[config.themeColor] || themes.Emerald;
+
+        const formFieldsHtml = template.frontendFields.map(field => {
+            const requiredAttr = field.required ? 'required' : '';
+            const requiredSpan = field.required ? '<span class="text-red-500">*</span>' : '';
+            const commonClasses = `mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm sm:text-sm p-2 ${selectedTheme.border} ${selectedTheme.ring}`;
+
+            if (field.type === 'textarea') {
+                return `
+                <div>
+                    <label for="${field.id}" class="block text-sm font-medium text-gray-700">${field.label} ${requiredSpan}</label>
+                    <textarea id="${field.id}" name="${field.id}" rows="4" class="${commonClasses}" ${requiredAttr}></textarea>
+                </div>`;
+            } else if (field.type === 'select') {
+                const optionsHtml = field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+                return `
+                <div>
+                    <label for="${field.id}" class="block text-sm font-medium text-gray-700">${field.label} ${requiredSpan}</label>
+                    <select id="${field.id}" name="${field.id}" class="${commonClasses} bg-white" ${requiredAttr}>${optionsHtml}</select>
+                </div>`;
+            } else {
+                 return `
+                <div>
+                    <label for="${field.id}" class="block text-sm font-medium text-gray-700">${field.label} ${requiredSpan}</label>
+                    <input type="${field.type}" name="${field.id}" id="${field.id}" class="${commonClasses}" ${requiredAttr}>
+                </div>`;
+            }
+        }).join('');
+
+        const dataObjectFields = template.dataFields.map(field => {
+            return `${field}: document.getElementById('${field}').value`;
+        }).join(',\n                ');
+
+        const logoHtml = config.logoUrl ? `<img src="${config.logoUrl}" alt="App Logo" class="h-16 w-auto mx-auto mb-4 object-contain">` : '';
+
+        return `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${config.appName}</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Sarabun', sans-serif; } </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex flex-col items-center justify-center py-8 px-4">
+        <div class="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-2xl">
+            ${logoHtml}
+            <h1 class="text-3xl font-bold text-center text-gray-800">${config.appName}</h1>
+            <form id="dataForm" class="space-y-6">
+                ${formFieldsHtml}
+                <button type="submit" id="submitBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white ${selectedTheme.bg} ${selectedTheme.hover} focus:outline-none focus:ring-2 focus:ring-offset-2 ${selectedTheme.ring}">
+                    ส่งข้อมูล
+                </button>
+            </form>
+            <div id="responseMsg" class="text-center text-sm font-semibold"></div>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('dataForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const responseMsg = document.getElementById('responseMsg');
+        const scriptURL = '${config.appsScriptUrl}';
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'กำลังส่ง...';
+            responseMsg.textContent = '';
+            const data = { ${dataObjectFields} };
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                responseMsg.textContent = '✔ บันทึกข้อมูลเรียบร้อยแล้ว!';
+                responseMsg.className = 'text-center text-sm font-semibold text-green-600';
+                form.reset();
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                responseMsg.textContent = '❌ เกิดข้อผิดพลาด: ' + error.message;
+                responseMsg.className = 'text-center text-sm font-semibold text-red-600';
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ส่งข้อมูล';
+            });
+        });
+    <\/script>
+</body>
+</html>`.trim();
+    }
+
+    // --- Utility Functions ---
+    function copyCode(elementId) {
+        const codeElement = document.getElementById(elementId);
+        const codeToCopy = codeElement.textContent;
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = codeToCopy;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        try {
+            document.execCommand('copy');
+            alert('คัดลอกโค้ดเรียบร้อย!');
+        } catch (err) {
+            console.error('Could not copy text: ', err);
+            alert('ไม่สามารถคัดลอกได้');
+        }
+        document.body.removeChild(tempTextArea);
+    }
+
+</script>
+</body>
+</html>
+
